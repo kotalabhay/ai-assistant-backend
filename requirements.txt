@@ -1,0 +1,9 @@
+fastapi==0.135.3
+fastapi-guard==5.0.0
+uvicorn[standard]==0.44.0
+pydantic==2.12.5
+pydantic-settings==2.13.1
+PyJWT==2.12.1
+google-generativeai==0.8.6
+pytest==9.0.3
+httpx==0.28.1
