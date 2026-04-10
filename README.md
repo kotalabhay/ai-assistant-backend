@@ -1,6 +1,6 @@
 # AI Query Assistant — Backend
 
-This repository contains the backend API and container orchestration for the AI Query Assistant It provides a containerized environment that serves as the foundation for the entire application, including the API Gateway, the Python-powered intelligence layer, and the static UI assets.
+This repository contains the backend API and container orchestration for the AI Query Assistant. It provides a containerized environment that serves as the foundation for the entire application, including the API Gateway, the Python-powered intelligence layer, and the static UI assets.
 
 - **Backend + Orchestration** (this repository): [ai-assistant-backend](https://github.com/kotalabhay/ai-assistant-backend)
 - **Frontend UI**: [ai-assistant-ui](https://github.com/kotalabhay/ai-assistant-ui)
@@ -14,8 +14,8 @@ The system is architected as a set of three isolated containers coordinated via 
 ```text
 Browser
   └── Gateway (nginx:1.25-alpine, port 80)
-        ├── /          → UI (nginx, static React build)
-        └── /api/      → Backend (FastAPI, port 8000)
+        ├── /             → UI (nginx, static React build)
+        └── /api/v1/      → Backend (FastAPI, port 8000)
 ```
 
 1.  **Gateway**: A standalone Nginx reverse proxy. It ensures the browser only communicates with a single origin, eliminating CORS complexity and providing a single layer for future SSL termination and load balancing.
@@ -32,8 +32,8 @@ FastAPI was chosen for its native support for asynchronous programming (`async/a
 ### Why an Nginx Gateway?
 Using a dedicated Gateway container separates the routing logic from the application logic. This pattern mirrors production-grade deployments where a Load Balancer or Reverse Proxy sits in front of internal microservices. It also allows the backend and UI to communicate over a private Docker bridge network without exposing their internal ports to the host machine.
 
-### why this JWT approach?
-The assignment requires JWT-based endpoint protection. We implemented a stateful authentication boundary where the backend issues tokens via `/auth/login` and verifies them using `fastapi-guard`. This approach was chosen because it is the industry standard for securing decoupled SPAs, allowing for completely stateless API requests that carry their own authorization context.
+### Why this JWT approach?
+The assignment requires JWT-based endpoint protection. We implemented a secure authentication boundary where the backend issues tokens via `/api/v1/auth/login` and verifies them using `fastapi_guard`. This approach was chosen as it represents the industry standard for securing decoupled SPAs, allowing for completely stateless API requests that carry their own authorization context.
 
 ---
 
@@ -144,6 +144,5 @@ Returns the current health status of the API.
 ## Assumptions and Trade-offs
 
 - **Static Authentication**: For the scope of this exercise, a single admin account is configured via environment variables. In a production system, this would be replaced by a database-backed user management system.
-- **Statelessness**: The application does not persist chat history. Each request is processed independently to minimize infrastructure complexity for the assignment.
-- **HTTP/HTTPS**: Local development runs on HTTP. Production SSL termination is expected to be handled at the Load Balancer level (AWB/ALB) as described in `DEPLOYMENT.md`.
-- **No Database**: As no persistence was required by the prompt, no database container (e.g., PostgreSQL) is included to keep the footprint lightweight.
+- **Statelessness**: The application does not persist chat history server-side. Each request is processed independently to minimize infrastructure complexity while maintaining clear, predictable scaling patterns.
+- **Architectural Footprint**: As persistent storage was not a requirement for this specific scope, a database container (e.g., PostgreSQL) was omitted. This ensures a lightweight deployment suitable for evaluation and eliminates unnecessary side-effect management during the review process.
